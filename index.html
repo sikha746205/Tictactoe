@@ -557,10 +557,12 @@
             connectWebSocket() {
                 if (this.socket && this.socket.readyState === WebSocket.OPEN) return;
 
-                this.socket = new WebSocket('ws://localhost:8080');
+                const socketProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+                const socketUrl = `${socketProtocol}//${location.host}`;
+                this.socket = new WebSocket(socketUrl);
 
                 this.socket.addEventListener('open', () => {
-                    console.log('WebSocket connected to ws://localhost:8080');
+                    console.log('WebSocket connected to', socketUrl);
                     // run queued callbacks waiting for open
                     if (Array.isArray(this.socketOpenCallbacks)) {
                         this.socketOpenCallbacks.forEach(cb => { try { cb(); } catch(e){} });

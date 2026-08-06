@@ -1,11 +1,20 @@
 // Minimal WebSocket server for Tic Tac Toe online mode
 // Usage:
-// 1. npm init -y
-// 2. npm install ws
-// 3. node server.js
+// 1. npm install
+// 2. npm start
 
+const express = require('express');
+const http = require('http');
+const path = require('path');
 const WebSocket = require('ws');
-const wss = new WebSocket.Server({ port: 8080 });
+
+const app = express();
+const server = http.createServer(app);
+const port = process.env.PORT || 8080;
+
+app.use(express.static(path.join(__dirname)));
+
+const wss = new WebSocket.Server({ server });
 
 const rooms = {}; // roomId -> { clients: [ws, ...], board: Array(9), currentPlayer: 'X' }
 
