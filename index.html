@@ -1,0 +1,1027 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic Tac Toe - Ultimate Edition</title>
+    <style>
+        /* ===== RESET & BASE ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 2rem 2.5rem;
+            text-align: center;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+            max-width: 500px;
+            width: 90%;
+            display: none;
+        }
+
+        .container.active {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            color: #fff;
+            font-size: 2.5rem;
+            letter-spacing: 2px;
+            margin-bottom: 0.25rem;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.85rem;
+            margin-bottom: 1.5rem;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+        }
+
+        .description {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        /* ===== BUTTONS ===== */
+        .btn {
+            padding: 0.75rem 2rem;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            letter-spacing: 0.5px;
+        }
+
+        .btn:active {
+            transform: scale(0.95);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.12);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.22);
+        }
+
+        /* ===== PAGES ===== */
+
+        /* HOME PAGE */
+        #homePage h1 {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .logo {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .btn-home {
+            width: 100%;
+            padding: 1rem;
+            font-size: 1.1rem;
+        }
+
+        /* MODE SELECTION PAGE */
+        .mode-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .mode-card {
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.08);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            text-align: left;
+        }
+
+        .mode-card:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: translateX(10px);
+        }
+
+        .mode-card-emoji {
+            font-size: 2.5rem;
+        }
+
+        .mode-card-text h3 {
+            color: #fff;
+            margin-bottom: 0.3rem;
+        }
+
+        .mode-card-text p {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9rem;
+        }
+
+        /* LEVEL SELECTION PAGE */
+        .level-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .level-card {
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.08);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .level-card:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-5px);
+        }
+
+        .level-emoji {
+            font-size: 2rem;
+        }
+
+        .level-card h3 {
+            color: #fff;
+            font-size: 1.1rem;
+        }
+
+        .level-card p {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.75rem;
+            text-align: center;
+        }
+
+        /* GAME PAGE */
+        .status {
+            color: #fff;
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            min-height: 2rem;
+            transition: color 0.3s ease;
+        }
+
+        .status.win {
+            color: #4ade80;
+        }
+
+        .status.draw {
+            color: #fbbf24;
+        }
+
+        .scoreboard {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-bottom: 1.25rem;
+            color: #fff;
+        }
+
+        .score-item {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 1rem;
+            font-weight: 500;
+            padding: 0.3rem 0.8rem;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .score-item .label {
+            opacity: 0.7;
+        }
+
+        .score-item .value {
+            font-weight: 700;
+            font-size: 1.2rem;
+            min-width: 1.6rem;
+        }
+
+        .score-item.x-score .value { color: #60a5fa; }
+        .score-item.o-score .value { color: #f87171; }
+        .score-item.draw-score .value { color: #fbbf24; }
+
+        .game-info {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .room-panel {
+            display: none;
+            justify-content: center;
+            gap: 0.5rem;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .room-panel.active {
+            display: flex;
+        }
+
+        .room-id {
+            background: rgba(255,255,255,0.06);
+            padding: 0.35rem 0.6rem;
+            border-radius: 8px;
+            color: #fff;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 0 auto 1.25rem;
+            max-width: 320px;
+        }
+
+        .cell {
+            aspect-ratio: 1 / 1;
+            background: rgba(255, 255, 255, 0.06);
+            border: 2px solid rgba(255, 255, 255, 0.12);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3.5rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s ease, transform 0.15s ease, border-color 0.3s ease;
+            user-select: none;
+            color: #fff;
+        }
+
+        .cell:hover:not(.disabled) {
+            background: rgba(255, 255, 255, 0.12);
+            transform: scale(1.03);
+        }
+
+        .cell:active:not(.disabled) {
+            transform: scale(0.95);
+        }
+
+        .cell.disabled {
+            cursor: not-allowed;
+        }
+
+        .cell.x {
+            color: #60a5fa;
+            text-shadow: 0 0 20px rgba(96, 165, 250, 0.4);
+        }
+
+        .cell.o {
+            color: #f87171;
+            text-shadow: 0 0 20px rgba(248, 113, 113, 0.4);
+        }
+
+        .cell.win-highlight {
+            background: rgba(74, 222, 128, 0.2);
+            border-color: #4ade80;
+            animation: pulse-win 0.8s ease infinite alternate;
+        }
+
+        @keyframes pulse-win {
+            0% {
+                box-shadow: 0 0 10px rgba(74, 222, 128, 0.3);
+                transform: scale(1);
+            }
+            100% {
+                box-shadow: 0 0 25px rgba(74, 222, 128, 0.6);
+                transform: scale(1.05);
+            }
+        }
+
+        .cell.just-placed {
+            animation: pop-in 0.25s ease;
+        }
+
+        @keyframes pop-in {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+            60% {
+                transform: scale(1.2);
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .btn-group-game {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: center;
+        }
+
+        .back-btn {
+            padding: 0.65rem 1.6rem;
+            margin-top: 1rem;
+        }
+
+        @media (max-width: 420px) {
+            .container {
+                padding: 1.5rem 1rem;
+            }
+            h1 {
+                font-size: 1.8rem;
+            }
+            .cell {
+                font-size: 2.5rem;
+            }
+            .board {
+                max-width: 260px;
+                gap: 8px;
+            }
+            .level-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HOME PAGE -->
+    <div id="homePage" class="container active">
+        <div class="logo">🎮</div>
+        <h1>TIC TAC TOE</h1>
+        <p class="subtitle">Ultimate Edition</p>
+        <p class="description">Challenge yourself in the classic game of Tic Tac Toe. Play against a friend or test your skills against the computer!</p>
+        <div class="btn-group">
+            <button class="btn btn-primary btn-home" onclick="app.goToModeSelection()">🎯 Play Now</button>
+            <button class="btn btn-primary btn-home" onclick="app.createRoom()">🌐 Create Online Room</button>
+            <button class="btn btn-secondary btn-home" onclick="app.joinRoom()">🔗 Join Online Room</button>
+            <button class="btn btn-secondary btn-home" onclick="alert('How to Play:\n\n1. Click on empty cells to make your move\n2. First to get 3 in a row wins\n3. Row, column, or diagonal - all count!\n4. Choose different difficulty levels for challenge')">❓ How to Play</button>
+        </div>
+    </div>
+
+    <!-- MODE SELECTION PAGE -->
+    <div id="modeSelectionPage" class="container">
+        <h1>Select Mode</h1>
+        <p class="subtitle">Choose your game mode</p>
+        <div class="mode-grid">
+            <div class="mode-card" onclick="app.selectMode('pvp')">
+                <div class="mode-card-emoji">👥</div>
+                <div class="mode-card-text">
+                    <h3>Player vs Player</h3>
+                    <p>Play with a friend on the same device</p>
+                </div>
+            </div>
+            <div class="mode-card" onclick="app.selectMode('pvc')">
+                <div class="mode-card-emoji">🤖</div>
+                <div class="mode-card-text">
+                    <h3>Player vs Computer</h3>
+                    <p>Challenge the AI with multiple difficulty levels</p>
+                </div>
+            </div>
+            <div class="mode-card" onclick="app.selectMode('cvc')">
+                <div class="mode-card-emoji">🔥</div>
+                <div class="mode-card-text">
+                    <h3>Computer vs Computer</h3>
+                    <p>Watch two AI players battle it out</p>
+                </div>
+            </div>
+        </div>
+        <button class="btn btn-secondary back-btn" onclick="app.goToHome()">← Back</button>
+    </div>
+
+    <!-- LEVEL SELECTION PAGE -->
+    <div id="levelSelectionPage" class="container">
+        <h1>Select Level</h1>
+        <p id="levelSubtitle" class="subtitle">Choose difficulty</p>
+        <div class="level-grid">
+            <div class="level-card" onclick="app.startGame('easy')">
+                <div class="level-emoji">😊</div>
+                <h3>Easy</h3>
+                <p>Perfect for beginners</p>
+            </div>
+            <div class="level-card" onclick="app.startGame('medium')">
+                <div class="level-emoji">🤔</div>
+                <h3>Medium</h3>
+                <p>Moderate challenge</p>
+            </div>
+            <div class="level-card" onclick="app.startGame('hard')">
+                <div class="level-emoji">😠</div>
+                <h3>Hard</h3>
+                <p>Very challenging</p>
+            </div>
+            <div class="level-card" onclick="app.startGame('expert')">
+                <div class="level-emoji">🤬</div>
+                <h3>Expert</h3>
+                <p>Unbeatable AI</p>
+            </div>
+        </div>
+        <button class="btn btn-secondary back-btn" onclick="app.goToModeSelection()">← Back</button>
+    </div>
+
+    <!-- GAME PAGE -->
+    <div id="gamePage" class="container">
+        <h1>TIC TAC TOE</h1>
+        <p id="gameMode" class="subtitle">Playing</p>
+
+        <div class="game-info" id="gameInfo"></div>
+
+        <div class="room-panel" id="roomPanel">
+            <div class="room-id" id="roomIdDisplay">Room: —</div>
+            <button class="btn btn-secondary" id="copyRoomBtn" onclick="app.copyRoomId()">Copy ID</button>
+            <button class="btn btn-secondary" id="leaveRoomBtn" onclick="app.leaveRoom()">Leave</button>
+        </div>
+
+        <div class="status" id="status">X's turn</div>
+
+        <div class="scoreboard">
+            <div class="score-item x-score">
+                <span class="label">X</span>
+                <span class="value" id="scoreX">0</span>
+            </div>
+            <div class="score-item draw-score">
+                <span class="label">Draw</span>
+                <span class="value" id="scoreDraw">0</span>
+            </div>
+            <div class="score-item o-score">
+                <span class="label">O</span>
+                <span class="value" id="scoreO">0</span>
+            </div>
+        </div>
+
+        <div class="board" id="board">
+            <div class="cell" data-index="0"></div>
+            <div class="cell" data-index="1"></div>
+            <div class="cell" data-index="2"></div>
+            <div class="cell" data-index="3"></div>
+            <div class="cell" data-index="4"></div>
+            <div class="cell" data-index="5"></div>
+            <div class="cell" data-index="6"></div>
+            <div class="cell" data-index="7"></div>
+            <div class="cell" data-index="8"></div>
+        </div>
+
+        <div class="btn-group-game">
+            <button class="btn btn-secondary" onclick="app.restartGame()">↻ Restart</button>
+            <button class="btn btn-primary" onclick="app.goToModeSelection()">🏠 Menu</button>
+        </div>
+    </div>
+
+    <script>
+        const WIN_PATTERNS = [
+            [0, 1, 2], [3, 4, 5], [6, 7, 8],
+            [0, 3, 6], [1, 4, 7], [2, 5, 8],
+            [0, 4, 8], [2, 4, 6]
+        ];
+
+        const app = {
+            currentPage: 'home',
+            gameMode: 'pvp',
+            difficulty: 'medium',
+            board: Array(9).fill(null),
+            currentPlayer: 'X',
+            gameActive: true,
+            scores: { X: 0, O: 0, draw: 0 },
+            socket: null,
+            socketOpenCallbacks: [],
+            roomId: null,
+            symbol: null,
+            isComputerThinking: false,
+
+            connectWebSocket() {
+                if (this.socket && this.socket.readyState === WebSocket.OPEN) return;
+
+                this.socket = new WebSocket('ws://localhost:8080');
+
+                this.socket.addEventListener('open', () => {
+                    console.log('WebSocket connected to ws://localhost:8080');
+                    // run queued callbacks waiting for open
+                    if (Array.isArray(this.socketOpenCallbacks)) {
+                        this.socketOpenCallbacks.forEach(cb => { try { cb(); } catch(e){} });
+                        this.socketOpenCallbacks.length = 0;
+                    }
+                });
+
+                this.socket.addEventListener('message', (event) => {
+                    try {
+                        const data = JSON.parse(event.data);
+                        this.handleSocketData(data);
+                    } catch (error) {
+                        console.error('WebSocket message parse error', error);
+                    }
+                });
+
+                this.socket.addEventListener('close', () => {
+                    console.warn('WebSocket disconnected');
+                    this.updateStatus('WebSocket disconnected');
+                });
+
+                this.socket.addEventListener('error', (error) => {
+                    console.error('WebSocket error', error);
+                    this.updateStatus('WebSocket error');
+                });
+            },
+
+            sendSocket(data) {
+                if (this.socket && this.socket.readyState === WebSocket.OPEN) {
+                    this.socket.send(JSON.stringify(data));
+                } else {
+                    console.warn('WebSocket is not open');
+                }
+            },
+
+            handleSocketData(data) {
+                console.log('WebSocket received:', data);
+                switch (data.type) {
+                    case 'created':
+                        this.roomId = data.roomId;
+                        this.symbol = data.symbol;
+                        this.updateStatus(`Room ${data.roomId} created. You are ${data.symbol}`);
+                        this.resetBoard(false);
+                        this.updateGameInfo();
+                        this.showPage('gamePage');
+                        this.showRoomPanel();
+                        break;
+                    case 'joined':
+                        this.roomId = data.roomId;
+                        this.symbol = data.symbol;
+                        this.updateStatus(`Joined room ${data.roomId}. You are ${data.symbol}`);
+                        this.resetBoard(false);
+                        this.updateGameInfo();
+                        this.showPage('gamePage');
+                        this.showRoomPanel();
+                        break;
+                    case 'state':
+                        if (Array.isArray(data.board)) {
+                            this.board = data.board.slice();
+                            this.currentPlayer = data.currentPlayer || this.currentPlayer;
+                            this.renderBoard();
+                            this.updateStatus(`${this.currentPlayer}'s turn`);
+                        }
+                        break;
+                    case 'opponent-joined':
+                        this.updateStatus('Opponent joined — game ready');
+                        break;
+                    case 'move':
+                        if (typeof data.index === 'number' && data.symbol) {
+                            this.board[data.index] = data.symbol;
+                            // update current player
+                            this.currentPlayer = this.currentPlayer === 'X' ? 'O' : 'X';
+                            this.renderBoard();
+
+                            const result = this.checkWinner();
+                            if (result) {
+                                this.handleGameEnd(result);
+                            } else if (this.isBoardFull()) {
+                                this.handleGameEnd(null);
+                            } else {
+                                this.updateStatus(`${this.currentPlayer}'s turn`);
+                            }
+                        }
+                        break;
+                    case 'error':
+                        console.error('Server error:', data.message);
+                        break;
+                    default:
+                        console.log('Unhandled WebSocket type:', data.type);
+                }
+            },
+
+            createRoom() {
+                this.updateStatus('Connecting to server...');
+                this.connectWebSocket();
+                if (this.socket && this.socket.readyState === WebSocket.OPEN) {
+                    this.sendSocket({ type: 'create' });
+                } else {
+                    this.socketOpenCallbacks = this.socketOpenCallbacks || [];
+                    this.socketOpenCallbacks.push(() => this.sendSocket({ type: 'create' }));
+                }
+            },
+
+            joinRoom() {
+                const id = prompt('Enter Room ID to join:');
+                if (!id) return;
+                this.updateStatus('Connecting to server...');
+                this.connectWebSocket();
+                const sendJoin = () => this.sendSocket({ type: 'join', roomId: id.trim().toUpperCase() });
+                if (this.socket && this.socket.readyState === WebSocket.OPEN) {
+                    sendJoin();
+                } else {
+                    this.socketOpenCallbacks = this.socketOpenCallbacks || [];
+                    this.socketOpenCallbacks.push(sendJoin);
+                }
+            },
+
+            showRoomPanel() {
+                const panel = document.getElementById('roomPanel');
+                const disp = document.getElementById('roomIdDisplay');
+                if (panel && disp) {
+                    disp.textContent = `Room: ${this.roomId || '—'}`;
+                    panel.classList.add('active');
+                }
+            },
+
+            hideRoomPanel() {
+                const panel = document.getElementById('roomPanel');
+                if (panel) panel.classList.remove('active');
+            },
+
+            copyRoomId() {
+                if (!this.roomId) return alert('No room ID to copy');
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(this.roomId).then(() => {
+                        this.updateStatus('Room ID copied to clipboard');
+                    }).catch(() => {
+                        alert('Copy failed — please copy manually: ' + this.roomId);
+                    });
+                } else {
+                    window.prompt('Copy the room ID:', this.roomId);
+                }
+            },
+
+            leaveRoom() {
+                if (this.socket && this.socket.readyState === WebSocket.OPEN && this.roomId) {
+                    // simply close socket; server handles cleanup on close
+                    try { this.socket.close(); } catch(e){}
+                }
+                this.roomId = null;
+                this.symbol = null;
+                this.hideRoomPanel();
+                this.updateStatus("Left room");
+            },
+
+            // ===== NAVIGATION =====
+            showPage(pageId) {
+                document.querySelectorAll('.container').forEach(el => el.classList.remove('active'));
+                document.getElementById(pageId).classList.add('active');
+                this.currentPage = pageId;
+            },
+
+            goToHome() {
+                this.showPage('homePage');
+            },
+
+            goToModeSelection() {
+                this.showPage('modeSelectionPage');
+            },
+
+            selectMode(mode) {
+                this.gameMode = mode;
+                if (mode === 'pvp') {
+                    this.startGame('pvp');
+                } else {
+                    document.getElementById('levelSubtitle').textContent = 
+                        mode === 'pvc' ? 'Choose difficulty for Player vs Computer' : 'Choose AI level for Computer vs Computer';
+                    this.showPage('levelSelectionPage');
+                }
+            },
+
+            startGame(level) {
+                if (this.gameMode === 'pvp') {
+                    this.difficulty = 'pvp';
+                } else {
+                    this.difficulty = level;
+                }
+                this.resetBoard(false);
+                this.updateGameInfo();
+                this.showPage('gamePage');
+
+                if (this.gameMode === 'cvc') {
+                    setTimeout(() => this.computerMove(), 800);
+                }
+            },
+
+            updateGameInfo() {
+                let info = '';
+                if (this.gameMode === 'pvp') {
+                    info = '👥 Player vs Player';
+                } else if (this.gameMode === 'pvc') {
+                    const levelEmoji = { easy: '😊', medium: '🤔', hard: '😠', expert: '🤬' };
+                    info = `🤖 Player vs Computer (${levelEmoji[this.difficulty]} ${this.difficulty.toUpperCase()})`;
+                } else {
+                    const levelEmoji = { easy: '😊', medium: '🤔', hard: '😠', expert: '🤬' };
+                    info = `🔥 Computer vs Computer (${levelEmoji[this.difficulty]} ${this.difficulty.toUpperCase()})`;
+                }
+                document.getElementById('gameInfo').textContent = info;
+            },
+
+            restartGame() {
+                this.resetBoard(true);
+            },
+
+            // ===== AI LOGIC =====
+            getAvailableMoves() {
+                return this.board.map((cell, i) => cell === null ? i : null).filter(i => i !== null);
+            },
+
+            evaluateBoard() {
+                for (const pattern of WIN_PATTERNS) {
+                    const [a, b, c] = pattern;
+                    if (this.board[a] && this.board[a] === this.board[b] && this.board[a] === this.board[c]) {
+                        return this.board[a] === 'O' ? 10 : -10;
+                    }
+                }
+                return 0;
+            }
+,
+            minimax(depth, isMaximizing, maxDepth) {
+                const score = this.evaluateBoard();
+
+                if (score === 10) return 10 - depth;
+                if (score === -10) return -10 + depth;
+                if (this.board.every(cell => cell !== null)) return 0;
+                if (depth >= maxDepth) return 0;
+
+                if (isMaximizing) {
+                    let bestScore = -Infinity;
+                    for (let i = 0; i < 9; i++) {
+                        if (this.board[i] === null) {
+                            this.board[i] = 'O';
+                            const score = this.minimax(depth + 1, false, maxDepth);
+                            this.board[i] = null;
+                            bestScore = Math.max(score, bestScore);
+                        }
+                    }
+                    return bestScore;
+                } else {
+                    let bestScore = Infinity;
+                    for (let i = 0; i < 9; i++) {
+                        if (this.board[i] === null) {
+                            this.board[i] = 'X';
+                            const score = this.minimax(depth + 1, true, maxDepth);
+                            this.board[i] = null;
+                            bestScore = Math.min(score, bestScore);
+                        }
+                    }
+                    return bestScore;
+                }
+            },
+
+            getComputerMove() {
+                const available = this.getAvailableMoves();
+                
+                if (this.difficulty === 'easy') {
+                    return available[Math.floor(Math.random() * available.length)];
+                }
+
+                if (this.difficulty === 'medium') {
+                    if (Math.random() < 0.5) {
+                        return available[Math.floor(Math.random() * available.length)];
+                    }
+                    return this.getOptimalMove(3);
+                }
+
+                if (this.difficulty === 'hard') {
+                    if (Math.random() < 0.2) {
+                        return available[Math.floor(Math.random() * available.length)];
+                    }
+                    return this.getOptimalMove(7);
+                }
+
+                if (this.difficulty === 'expert') {
+                    return this.getOptimalMove(9);
+                }
+
+                return available[Math.floor(Math.random() * available.length)];
+            },
+
+            getOptimalMove(depth) {
+                let bestScore = -Infinity;
+                let bestMove = null;
+
+                for (let i = 0; i < 9; i++) {
+                    if (this.board[i] === null) {
+                        this.board[i] = 'O';
+                        const score = this.minimax(0, false, depth);
+                        this.board[i] = null;
+
+                        if (score > bestScore) {
+                            bestScore = score;
+                            bestMove = i;
+                        }
+                    }
+                }
+                return bestMove;
+            },
+
+            // ===== GAME LOGIC =====
+            renderBoard() {
+                document.querySelectorAll('.cell').forEach((cell, i) => {
+                    const mark = this.board[i];
+                    cell.textContent = mark || '';
+                    cell.className = 'cell' + (mark ? ' disabled ' + mark.toLowerCase() : '');
+                });
+            },
+
+            updateStatus(message, type = '') {
+                const statusEl = document.getElementById('status');
+                statusEl.textContent = message;
+                statusEl.className = 'status' + (type ? ' ' + type : '');
+            },
+
+            updateScores() {
+                document.getElementById('scoreX').textContent = this.scores.X;
+                document.getElementById('scoreO').textContent = this.scores.O;
+                document.getElementById('scoreDraw').textContent = this.scores.draw;
+            },
+
+            checkWinner() {
+                for (const pattern of WIN_PATTERNS) {
+                    const [a, b, c] = pattern;
+                    if (this.board[a] && this.board[a] === this.board[b] && this.board[a] === this.board[c]) {
+                        return { winner: this.board[a], pattern };
+                    }
+                }
+                return null;
+            },
+
+            isBoardFull() {
+                return this.board.every(cell => cell !== null);
+            },
+
+            handleGameEnd(winner) {
+                this.gameActive = false;
+                if (winner) {
+                    this.scores[winner.winner]++;
+                    this.updateScores();
+                    this.updateStatus(`🎉 ${winner.winner} Wins!`, 'win');
+                    winner.pattern.forEach(idx => {
+                        document.querySelectorAll('.cell')[idx].classList.add('win-highlight');
+                    });
+                } else {
+                    this.scores.draw++;
+                    this.updateScores();
+                    this.updateStatus("🤝 It's a Draw!", 'draw');
+                }
+            },
+
+            placeMove(index) {
+                if (!this.gameActive || this.board[index] !== null) return false;
+
+                this.board[index] = this.currentPlayer;
+                const cells = document.querySelectorAll('.cell');
+                cells[index].textContent = this.currentPlayer;
+                cells[index].className = 'cell disabled ' + this.currentPlayer.toLowerCase() + ' just-placed';
+
+                const result = this.checkWinner();
+                if (result) {
+                    this.handleGameEnd(result);
+                    return true;
+                }
+
+                if (this.isBoardFull()) {
+                    this.handleGameEnd(null);
+                    return true;
+                }
+
+                this.currentPlayer = this.currentPlayer === 'X' ? 'O' : 'X';
+                return false;
+            },
+
+            handleCellClick(e) {
+                if (this.isComputerThinking) return;
+                if (this.gameMode === 'cvc') return;
+                if (this.gameMode === 'pvc' && this.currentPlayer !== 'X') return;
+
+                const cell = e.currentTarget;
+                const index = parseInt(cell.dataset.index);
+
+                // If connected to an online room, send move to server instead
+                if (this.roomId && this.symbol) {
+                    // Only allow player to move if it's their symbol
+                    if (this.currentPlayer !== this.symbol) return;
+                    this.sendSocket({ type: 'move', roomId: this.roomId, index, symbol: this.symbol });
+                    return;
+                }
+
+                this.placeMove(index);
+
+                if (this.gameActive && this.gameMode === 'pvc' && this.currentPlayer === 'O') {
+                    setTimeout(() => this.computerMove(), 500);
+                }
+            },
+
+            computerMove() {
+                if (!this.gameActive) return;
+                this.isComputerThinking = true;
+
+                const move = this.getComputerMove();
+                if (move !== null) {
+                    this.placeMove(move);
+
+                    if (this.gameActive && this.gameMode === 'pvc' && this.currentPlayer === 'X') {
+                        this.isComputerThinking = false;
+                    } else if (this.gameActive && this.gameMode === 'cvc') {
+                        setTimeout(() => this.computerMove(), 800);
+                    } else {
+                        this.isComputerThinking = false;
+                    }
+                } else {
+                    this.isComputerThinking = false;
+                }
+
+                if (!this.gameActive) {
+                    this.isComputerThinking = false;
+                }
+            },
+
+            resetBoard(keepScores = true) {
+                this.board = Array(9).fill(null);
+                this.currentPlayer = 'X';
+                this.gameActive = true;
+                this.isComputerThinking = false;
+
+                if (!keepScores) {
+                    this.scores = { X: 0, O: 0, draw: 0 };
+                    this.updateScores();
+                }
+
+                this.renderBoard();
+                this.updateStatus("X's turn");
+
+                if (this.gameMode === 'cvc') {
+                    setTimeout(() => this.computerMove(), 800);
+                }
+            },
+
+            // ===== INIT =====
+            init() {
+                document.querySelectorAll('.cell').forEach(cell => {
+                    cell.addEventListener('click', (e) => this.handleCellClick(e));
+                });
+
+                this.connectWebSocket();
+            }
+        };
+
+        app.init();
+    </script>
+
+</body>
+</html>
